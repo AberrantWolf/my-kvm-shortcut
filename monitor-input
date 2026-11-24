@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Switch the Dell U4021QW's input over DDC/CI (VCP 0x60).
+# Usage: monitor-input linux|mac|get|0xNN
+set -euo pipefail
+
+# Codes reported by: ddcutil capabilities  (Feature 60)
+#   0x0f DisplayPort-1   0x11 HDMI-1   0x12 HDMI-2   0x19 Thunderbolt/USB-C
+LINUX_INPUT=0x0f
+MAC_INPUT=0x19
+
+# Addressed by model rather than /dev/i2c-N, since bus numbers can change across boots.
+DDC=(ddcutil --model "DELL U4021QW")
+
+case "${1:-}" in
+  linux) code=$LINUX_INPUT ;;
+  mac)   code=$MAC_INPUT ;;
+  get)   exec "${DDC[@]}" getvcp 60 ;;
+  0x*)   code=$1 ;;
+  *) echo "usage: $0 linux|mac|get|0xNN" >&2; exit 2 ;;
+esac
+
+# --noverify: after switching away, the monitor can't be read back from this host.
+exec "${DDC[@]}" --noverify setvcp 60 "$code"

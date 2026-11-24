@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Switch Monitor to Mac
+Comment=Switch the Dell U4021QW input to the Mac (Thunderbolt)
+Exec=monitor-input mac
+Icon=video-display
+NoDisplay=true
+X-KDE-GlobalAccel-CommandShortcut=true

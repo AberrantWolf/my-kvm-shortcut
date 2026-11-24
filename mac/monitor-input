@@ -1,0 +1,21 @@
+#!/bin/bash
+# macOS counterpart: switch the Dell U4021QW's input over DDC/CI.
+# Usage: monitor-input linux|mac|get|<decimal code>
+# Needs m1ddc (Apple Silicon): brew install m1ddc
+set -euo pipefail
+
+# Same codes as the Linux script, in decimal (m1ddc takes decimal).
+LINUX_INPUT=15   # 0x0f DisplayPort-1
+MAC_INPUT=25     # 0x19 Thunderbolt/USB-C
+
+M1DDC=$(command -v m1ddc || echo /opt/homebrew/bin/m1ddc)   # Shortcuts.app has a minimal PATH
+
+case "${1:-}" in
+  linux) code=$LINUX_INPUT ;;
+  mac)   code=$MAC_INPUT ;;
+  get)   exec "$M1DDC" get input ;;
+  [0-9]*) code=$1 ;;
+  *) echo "usage: $0 linux|mac|get|<code>" >&2; exit 2 ;;
+esac
+
+exec "$M1DDC" set input "$code"
